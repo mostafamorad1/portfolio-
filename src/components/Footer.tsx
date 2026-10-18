@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { useThemeLanguage } from "@/context/ThemeLanguageContext";
 import { Mail } from "lucide-react";
 import { personalInfo, getWhatsAppLink } from "@/data/portfolioData";
@@ -73,9 +74,9 @@ export default function Footer() {
 
           {/* Center: Logo */}
           <div className="flex flex-col items-center justify-center md:pt-4">
-            <a href="#home" aria-label={name} className="block h-20 group">
-              <img src="/assets/logo_light_text.png" alt={name} className="h-full w-auto object-contain hidden dark:block group-hover:scale-105 transition-transform" />
-              <img src="/assets/logo.png" alt={name} className="h-full w-auto object-contain block dark:hidden group-hover:scale-105 transition-transform" />
+            <a href="#home" aria-label={name} className="block h-20 group relative w-36">
+              <Image src="/assets/logo_light_text.png" alt={name} width={144} height={80} unoptimized className="h-full w-auto object-contain hidden dark:block group-hover:scale-105 transition-transform" />
+              <Image src="/assets/logo.png" alt={name} width={144} height={80} unoptimized className="h-full w-auto object-contain block dark:hidden group-hover:scale-105 transition-transform" />
             </a>
             <p className="mt-3 text-xs sm:text-sm tracking-wide font-mono text-slate-500 dark:text-slate-400">
               {footer.tagline}
@@ -112,11 +113,12 @@ export default function Footer() {
                 title={p.name}
                 className="group w-12 h-12 rounded-xl flex items-center justify-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 shadow-sm hover:shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-1 hover:border-indigo-300 dark:hover:border-cyan-500/50 transition-all duration-300"
               >
-                <img
+                <Image
                   src={p.icon}
                   alt={p.name}
                   width={28}
                   height={28}
+                  unoptimized
                   className="w-7 h-7 rounded-md object-contain group-hover:scale-110 transition-transform duration-300"
                 />
               </a>

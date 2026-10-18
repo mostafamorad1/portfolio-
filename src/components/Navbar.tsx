@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useRef } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useThemeLanguage } from "@/context/ThemeLanguageContext";
 import { Menu, X, Sun, Moon } from "lucide-react";
@@ -206,17 +207,23 @@ export default function Navbar() {
             }`}
           >
             {/* Dark Mode Logo (White Text) */}
-            <img
+            <Image
               src="/assets/logo_light_text.png"
               alt="Mostafa Morad"
+              width={140}
+              height={56}
+              unoptimized
               className={`h-full w-auto object-contain transition-all duration-500 group-hover:scale-105 filter drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)] block ${
                 isDark ? "opacity-100 scale-100" : "opacity-0 scale-95 absolute"
               }`}
             />
             {/* Light Mode Logo (Navy Text) */}
-            <img
+            <Image
               src="/assets/logo.png"
               alt="Mostafa Morad"
+              width={140}
+              height={56}
+              unoptimized
               className={`h-full w-auto object-contain transition-all duration-500 group-hover:scale-105 filter drop-shadow-[0_2px_8px_rgba(255,200,100,0.3)] block ${
                 !isDark ? "opacity-100 scale-100" : "opacity-0 scale-95 absolute"
               }`}
