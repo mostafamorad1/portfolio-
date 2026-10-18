@@ -66,8 +66,12 @@ export interface MilestoneItem {
 
 export interface TestimonialItem {
   id: string;
+  name: string;
+  role: string;
   quote: string;
-  attribution: string;
+  rating?: number;
+  linkedinUrl?: string;
+  createdAt?: string;
 }
 
 export interface SkillItem {

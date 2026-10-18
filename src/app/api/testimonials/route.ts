@@ -8,37 +8,30 @@ export interface StoredTestimonial {
   role: string;
   quote: string;
   rating?: number;
+  linkedinUrl?: string;
   avatar?: string;
   createdAt?: string;
 }
 
-// In-memory store for edge runtime
-let inMemoryTestimonials: StoredTestimonial[] = [];
+// Note: Public testimonials are strictly controlled and curated via `portfolioData.ts`.
+// Submissions received here are validated and processed for owner review (not publicly auto-published).
 
 export async function GET() {
-  try {
-    return NextResponse.json(
-      { success: true, testimonials: inMemoryTestimonials },
-      {
-        status: 200,
-        headers: {
-          "Cache-Control": "public, s-maxage=10, stale-while-revalidate=59",
-        },
-      }
-    );
-  } catch (err) {
-    console.error("Error fetching testimonials:", err);
-    return NextResponse.json(
-      { success: false, error: "Failed to load testimonials", testimonials: [] },
-      { status: 500 }
-    );
-  }
+  return NextResponse.json(
+    { success: true, testimonials: [] },
+    {
+      status: 200,
+      headers: {
+        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120",
+      },
+    }
+  );
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, role, quote, rating } = body;
+    const { name, role, quote, rating, linkedinUrl } = body;
 
     // Validation
     if (!name || typeof name !== "string" || name.trim().length < 2 || name.trim().length > 80) {
@@ -48,7 +41,7 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!role || typeof role !== "string" || role.trim().length < 2 || role.trim().length > 100) {
+    if (!role || typeof role !== "string" || name.trim().length < 2 || role.trim().length > 100) {
       return NextResponse.json(
         { success: false, error: "Please enter your role or title (e.g. Senior Data Scientist, Client)" },
         { status: 400 }
@@ -62,6 +55,19 @@ export async function POST(request: Request) {
       );
     }
 
+    let sanitizedLinkedin = "";
+    if (linkedinUrl && typeof linkedinUrl === "string" && linkedinUrl.trim()) {
+      const trimmed = linkedinUrl.trim();
+      const fullUrl = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+      if (!/linkedin\.com\/(in|company|pub)\//i.test(fullUrl)) {
+        return NextResponse.json(
+          { success: false, error: "Please enter a valid LinkedIn profile URL (e.g. https://linkedin.com/in/username)" },
+          { status: 400 }
+        );
+      }
+      sanitizedLinkedin = fullUrl;
+    }
+
     const numericRating = typeof rating === "number" && rating >= 1 && rating <= 5 ? rating : 5;
 
     const newTestimonial: StoredTestimonial = {
@@ -70,25 +76,24 @@ export async function POST(request: Request) {
       role: role.trim(),
       quote: quote.trim(),
       rating: numericRating,
+      ...(sanitizedLinkedin ? { linkedinUrl: sanitizedLinkedin } : {}),
       createdAt: new Date().toISOString(),
     };
 
-    // Prepend new review so it appears first / prominently
-    inMemoryTestimonials = [newTestimonial, ...inMemoryTestimonials];
+    console.log("[New Testimonial Submitted for Moderation]:", newTestimonial);
 
     return NextResponse.json(
       {
         success: true,
-        message: "Testimonial submitted successfully!",
+        message: "Testimonial submitted for review!",
         testimonial: newTestimonial,
-        testimonials: inMemoryTestimonials,
       },
       { status: 201 }
     );
   } catch (err) {
-    console.error("Error saving testimonial:", err);
+    console.error("Error processing testimonial:", err);
     return NextResponse.json(
-      { success: false, error: "Failed to save testimonial. Please try again." },
+      { success: false, error: "Failed to process testimonial. Please try again." },
       { status: 500 }
     );
   }
