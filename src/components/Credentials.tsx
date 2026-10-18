@@ -26,10 +26,7 @@ interface CategoryTab {
 const CATEGORIES: CategoryTab[] = [
   { id: "all", labelEn: "All", labelAr: "الكل" },
   { id: "ai-data", labelEn: "AI & Data", labelAr: "البيانات والذكاء الاصطناعي" },
-  { id: "cybersecurity", labelEn: "Cybersecurity", labelAr: "الأمن السيبراني" },
   { id: "programming", labelEn: "Programming", labelAr: "البرمجة" },
-  { id: "leadership", labelEn: "Leadership", labelAr: "القيادة وإدارة المشاريع" },
-  { id: "events", labelEn: "Events", labelAr: "الفعاليات والهاكاثونات" },
 ];
 
 export default function Credentials() {
