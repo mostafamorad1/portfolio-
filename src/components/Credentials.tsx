@@ -101,7 +101,7 @@ export default function Credentials() {
   return (
     <section
       id="credentials"
-      className="py-20 md:py-28 relative bg-slate-50/50 dark:bg-[#070b14]/70 scroll-mt-20 md:scroll-mt-24 transition-colors duration-300"
+      className="py-20 md:py-28 relative bg-transparent scroll-mt-20 md:scroll-mt-24"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header matching requested reference */}
