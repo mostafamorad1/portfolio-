@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="40%" stop-color="#261108" />
+      <stop offset="100%" stop-color="#140803" />
+    </linearGradient>
+
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="50%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f97316" />
+      <stop offset="100%" stop-color="#ea580c" />
+    </linearGradient>
+
+    <pattern id="gridPattern" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#f97316" stroke-width="0.75" stroke-opacity="0.12" />
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="700" fill="url(#bgGrad)" />
+  <rect width="1000" height="700" fill="url(#gridPattern)" />
+
+  <!-- Outer Elegant Frame -->
+  <rect x="25" y="25" width="950" height="650" rx="16" fill="none" stroke="#f97316" stroke-width="2" stroke-opacity="0.4" />
+  <rect x="35" y="35" width="930" height="630" rx="12" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" stroke-opacity="0.8" />
+  <rect x="42" y="42" width="916" height="616" rx="8" fill="none" stroke="#f97316" stroke-width="1" stroke-opacity="0.2" stroke-dasharray="6,4" />
+
+  <!-- Corner Ornaments -->
+  <g fill="none" stroke="url(#goldGrad)" stroke-width="2">
+    <!-- Top-Left -->
+    <path d="M 45 75 L 45 45 L 75 45" />
+    <circle cx="45" cy="45" r="4" fill="#fbbf24" />
+    <!-- Top-Right -->
+    <path d="M 955 75 L 955 45 L 925 45" />
+    <circle cx="955" cy="45" r="4" fill="#fbbf24" />
+    <!-- Bottom-Left -->
+    <path d="M 45 625 L 45 655 L 75 655" />
+    <circle cx="45" cy="655" r="4" fill="#fbbf24" />
+    <!-- Bottom-Right -->
+    <path d="M 955 625 L 955 655 L 925 655" />
+    <circle cx="955" cy="655" r="4" fill="#fbbf24" />
+  </g>
+
+  <!-- Certificate Emblem / Shield Top Center -->
+  <g transform="translate(500, 110)">
+    <circle cx="0" cy="0" r="32" fill="#f97316" fill-opacity="0.15" stroke="url(#goldGrad)" stroke-width="2" />
+    <path d="M -16 -8 L 0 -20 L 16 -8 L 16 10 C 16 20 0 28 0 28 C 0 28 -16 20 -16 10 Z" fill="#f97316" fill-opacity="0.8" />
+    <path d="M -6 5 L -1 10 L 8 -2" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+
+  <!-- Top Headers -->
+  <text x="500" y="175" text-anchor="middle" font-family="'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="700" letter-spacing="6" fill="#f97316" text-transform="uppercase">CERTIFICATE OF RECOGNITION</text>
+  <text x="500" y="200" text-anchor="middle" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" fill="#94a3b8" letter-spacing="2">INFORMATION TECHNOLOGY INSTITUTE (ITI)</text>
+
+  <!-- Decorative separator line -->
+  <line x1="380" y1="220" x2="620" y2="220" stroke="url(#goldGrad)" stroke-width="1.5" stroke-linecap="round" />
+  <circle cx="500" cy="220" r="3" fill="#fbbf24" />
+
+  <!-- Presentation Statement -->
+  <text x="500" y="260" text-anchor="middle" font-family="'Georgia', serif" font-size="16" font-style="italic" fill="#cbd5e1">This is proudly presented and awarded to</text>
+
+  <!-- Recipient Name -->
+  <text x="500" y="320" text-anchor="middle" font-family="'Segoe UI', 'Cairo', sans-serif" font-size="38" font-weight="900" fill="#ffffff" letter-spacing="1">Mostafa Morad Sayed</text>
+  <line x1="280" y1="340" x2="720" y2="340" stroke="url(#primaryGrad)" stroke-width="2" stroke-linecap="round" />
+
+  <!-- Description / Achievement -->
+  <text x="500" y="380" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="16" fill="#94a3b8">for successfully completing all rigorous requirements, exams, and professional standards for</text>
+
+  <!-- Certificate Title -->
+  <rect x="180" y="405" width="640" height="52" rx="10" fill="#f97316" fill-opacity="0.12" stroke="#f97316" stroke-opacity="0.4" stroke-width="1" />
+  <text x="500" y="438" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="22" font-weight="800" fill="#f97316">Advanced Database & Software Architecture</text>
+
+  <text x="500" y="485" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="14" font-weight="600" fill="#e2e8f0" letter-spacing="1">Specialization: <tspan fill="url(#goldGrad)">Enterprise Database Specialist</tspan></text>
+
+  <!-- Footer Information -->
+  <g transform="translate(100, 560)">
+    <!-- Left: Issue Date -->
+    <line x1="0" y1="35" x2="220" y2="35" stroke="#475569" stroke-width="1" />
+    <text x="110" y="25" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="15" font-weight="700" fill="#f8fafc">Completed 2024</text>
+    <text x="110" y="52" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="11" font-weight="600" fill="#94a3b8" letter-spacing="1">ISSUANCE &amp; STATUS</text>
+  </g>
+
+  <!-- Center Golden Stamp / Medallion -->
+  <g transform="translate(500, 575)">
+    <circle cx="0" cy="0" r="42" fill="#0f172a" stroke="url(#goldGrad)" stroke-width="3" />
+    <circle cx="0" cy="0" r="35" fill="none" stroke="url(#goldGrad)" stroke-width="1" stroke-dasharray="4,3" />
+    <text x="0" y="-12" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="9" font-weight="800" fill="#fbbf24" letter-spacing="2">VERIFIED</text>
+    <path d="M -8 2 L -2 8 L 10 -4" fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+    <text x="0" y="22" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="8" font-weight="700" fill="#f59e0b" letter-spacing="1">OFFICIAL</text>
+  </g>
+
+  <!-- Right: Credential ID -->
+  <g transform="translate(680, 560)">
+    <line x1="0" y1="35" x2="220" y2="35" stroke="#475569" stroke-width="1" />
+    <text x="110" y="25" text-anchor="middle" font-family="'Courier New', monospace" font-size="13" font-weight="700" fill="#f97316">ITI-MT-DB-2024-91823</text>
+    <text x="110" y="52" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="11" font-weight="600" fill="#94a3b8" letter-spacing="1">CREDENTIAL ID</text>
+  </g>
+</svg>
