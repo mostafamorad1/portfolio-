@@ -527,6 +527,7 @@ export default function Services() {
 
   // --- Magnetic Elastic Pull Calculation ---
   // When activeTab is selected, and hoveredTab is different, the pill stretches toward hoveredTab
+  // Crucial: The pill MUST strictly remain inside the unified curved navbar boundary (never protrude or leak vertically)
   const getPullStyles = (tabId: TabId) => {
     if (tabId !== activeTab || !hoveredTab || hoveredTab === activeTab) {
       return { x: 0, y: 0, scaleX: 1, scaleY: 1 };
@@ -536,37 +537,45 @@ export default function Services() {
     const activeTopIdx = topRowIds.indexOf(activeTab);
     const hoveredTopIdx = topRowIds.indexOf(hoveredTab);
 
-    // Both in top row
+    // Both tabs are in the top horizontal row: subtle, organic magnetic pull
     if (activeTopIdx !== -1 && hoveredTopIdx !== -1) {
       const diff = hoveredTopIdx - activeTopIdx;
-      // In RTL, the items are laid out right-to-left
+      // In RTL (Arabic), items are laid out right-to-left
       const dirSign = isAr ? -1 : 1;
-      const pullX = Math.sign(diff) * Math.min(Math.abs(diff) * 9, 16) * dirSign;
+      const pullX = Math.sign(diff) * Math.min(Math.abs(diff) * 5, 8) * dirSign;
       return {
         x: pullX,
         y: 0,
-        scaleX: 1.12,
-        scaleY: 0.95,
+        scaleX: 1.05,
+        scaleY: 0.98,
       };
     }
 
-    // Active in top row, hovering over "all" (below)
+    // Active tab in top row, user hovering over "All Services" (below center):
+    // MUST NOT drop down vertically (y: 0) to avoid protruding below the top bar's boundary!
+    // Instead, lean gently horizontally toward the center neck where All Services connects
     if (activeTopIdx !== -1 && hoveredTab === "all") {
+      const dirToCenter = activeTopIdx < 2 ? 1 : -1;
+      const dirSign = isAr ? -1 : 1;
       return {
-        x: 0,
-        y: 9,
-        scaleX: 0.96,
-        scaleY: 1.15,
+        x: dirToCenter * 4 * dirSign,
+        y: 0,
+        scaleX: 1.03,
+        scaleY: 1.0,
       };
     }
 
-    // Active is "all" (below), hovering over top row
+    // Active tab is "all" (bottom row), user hovering over a top row tab:
+    // MUST NOT push up vertically (y: 0) to avoid breaching the bottom tab's upper boundary!
+    // Instead, lean gently horizontally toward that tab's direction
     if (activeTab === "all" && hoveredTopIdx !== -1) {
+      const dirToTab = hoveredTopIdx < 2 ? -1 : 1;
+      const dirSign = isAr ? -1 : 1;
       return {
-        x: 0,
-        y: -9,
-        scaleX: 0.96,
-        scaleY: 1.15,
+        x: dirToTab * 4 * dirSign,
+        y: 0,
+        scaleX: 1.03,
+        scaleY: 1.0,
       };
     }
 
@@ -628,6 +637,11 @@ export default function Services() {
                 className="absolute inset-0 pointer-events-none -z-10 drop-shadow-md"
                 aria-hidden="true"
               >
+                <defs>
+                  <clipPath id="unifiedNavbarCurveClip">
+                    <path d={unifiedPath} />
+                  </clipPath>
+                </defs>
                 <path
                   d={unifiedPath}
                   className="fill-slate-100/95 dark:fill-slate-900/95 stroke-slate-200/90 dark:stroke-slate-800/90"
@@ -673,9 +687,9 @@ export default function Services() {
                           }}
                           transition={{
                             type: "spring",
-                            stiffness: 420,
-                            damping: 22,
-                            mass: 0.6,
+                            stiffness: 350,
+                            damping: 28,
+                            mass: 0.7,
                           }}
                           className="absolute inset-0 bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-md border border-slate-200/90 dark:border-slate-700/90 -z-10"
                         />
@@ -687,6 +701,7 @@ export default function Services() {
                           initial={{ opacity: 0, scale: 0.95 }}
                           animate={{ opacity: 1, scale: 1 }}
                           exit={{ opacity: 0, scale: 0.95 }}
+                          transition={{ duration: 0.18 }}
                           className="absolute inset-0 bg-slate-200/50 dark:bg-slate-800/40 rounded-xl sm:rounded-2xl -z-10"
                         />
                       )}
@@ -727,11 +742,11 @@ export default function Services() {
                       }}
                       transition={{
                         type: "spring",
-                        stiffness: 420,
-                        damping: 22,
-                        mass: 0.6,
+                        stiffness: 350,
+                        damping: 28,
+                        mass: 0.7,
                       }}
-                      className="absolute inset-x-1.5 inset-y-1 bg-white dark:bg-slate-800 rounded-xl shadow-md border border-slate-200/90 dark:border-slate-700/90 -z-10"
+                      className="absolute inset-x-2 inset-y-1 bg-white dark:bg-slate-800 rounded-xl shadow-md border border-slate-200/90 dark:border-slate-700/90 -z-10"
                     />
                   )}
 
@@ -739,7 +754,9 @@ export default function Services() {
                     <motion.div
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="absolute inset-x-1.5 inset-y-1 bg-slate-200/50 dark:bg-slate-800/40 rounded-xl -z-10"
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.18 }}
+                      className="absolute inset-x-2 inset-y-1 bg-slate-200/60 dark:bg-slate-800/60 border border-slate-300/40 dark:border-slate-700/60 rounded-xl -z-10 shadow-sm"
                     />
                   )}
 
