@@ -1,13 +1,13 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { useThemeLanguage } from "@/context/ThemeLanguageContext";
 import {
   User,
   Briefcase,
   Settings,
-  GraduationCap,
   Sparkles,
   Mail,
   MapPin,
@@ -400,9 +400,15 @@ export default function About() {
               <div className="pt-4 border-t border-slate-200/80 dark:border-white/10">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                   {/* Badge 1: Cairo University */}
-                  <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10">
-                    <div className="w-8 h-8 rounded-lg bg-purple-500/15 flex items-center justify-center text-purple-500 dark:text-purple-400 shrink-0">
-                      <GraduationCap className="w-4 h-4" />
+                  <div className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 hover:border-indigo-500/30 transition-colors">
+                    <div className="w-8 h-8 rounded-lg bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-white/10 p-1 flex items-center justify-center shrink-0 shadow-sm overflow-hidden">
+                      <Image
+                        src="/assets/cairo-university-icon.png"
+                        alt="Cairo University"
+                        width={32}
+                        height={32}
+                        className="w-full h-full object-contain"
+                      />
                     </div>
                     <div className="min-w-0">
                       <span className="text-[11px] font-bold text-slate-900 dark:text-white block truncate">
@@ -415,11 +421,15 @@ export default function About() {
                   </div>
 
                   {/* Badge 2: DEPI */}
-                  <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10">
-                    <div className="w-8 h-8 rounded-lg bg-amber-500/15 flex items-center justify-center text-amber-500 dark:text-amber-400 shrink-0">
-                      <span className="w-3.5 h-3.5 rounded-full border-2 border-amber-500 flex items-center justify-center">
-                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                      </span>
+                  <div className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 hover:border-amber-500/30 transition-colors">
+                    <div className="w-8 h-8 rounded-lg bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-white/10 p-1 flex items-center justify-center shrink-0 shadow-sm overflow-hidden">
+                      <Image
+                        src="/assets/depi-icon.png"
+                        alt="DEPI"
+                        width={32}
+                        height={32}
+                        className="w-full h-full object-contain"
+                      />
                     </div>
                     <div className="min-w-0">
                       <span className="text-[11px] font-bold text-slate-900 dark:text-white block truncate">
@@ -432,9 +442,15 @@ export default function About() {
                   </div>
 
                   {/* Badge 3: Huawei */}
-                  <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10">
-                    <div className="w-8 h-8 rounded-lg bg-red-500/15 flex items-center justify-center text-red-500 dark:text-red-400 shrink-0 font-bold text-xs">
-                      ★
+                  <div className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 hover:border-red-500/30 transition-colors">
+                    <div className="w-8 h-8 rounded-lg bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-white/10 p-1 flex items-center justify-center shrink-0 shadow-sm overflow-hidden">
+                      <Image
+                        src="/assets/huawei-icon.png"
+                        alt="Huawei"
+                        width={32}
+                        height={32}
+                        className="w-full h-full object-contain"
+                      />
                     </div>
                     <div className="min-w-0">
                       <span className="text-[11px] font-bold text-slate-900 dark:text-white block truncate">
