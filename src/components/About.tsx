@@ -9,35 +9,11 @@ import {
   Briefcase,
   Settings,
   Sparkles,
-  Mail,
-  MapPin,
   Terminal,
   Database,
   Code2,
   TrendingUp,
 } from "lucide-react";
-
-function GithubIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
-      <path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3" />
-    </svg>
-  );
-}
-
-function LinkedInIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76c.97 0 1.75-.79 1.75-1.76s-.78-1.76-1.75-1.76-1.75.79-1.75 1.76.78 1.76 1.75 1.76m1.4 9.74v-8.37H5.06v8.37h2.8z" />
-    </svg>
-  );
-}
 
 function TargetWithArrowIcon({ className }: { className?: string }) {
   return (
@@ -712,92 +688,6 @@ export default function About() {
                 {/* Decorative Subtle Bar Chart Graphic */}
                 <div className="absolute -bottom-2 -end-2 opacity-15 pointer-events-none text-cyan-500">
                   <TrendingUp className="w-24 h-24" />
-                </div>
-              </div>
-
-            </div>
-          </motion.div>
-
-          {/* ROW 4: BOTTOM QUICK CONTACT / INFO BAR */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.35 }}
-            className="p-4 sm:p-5 rounded-3xl bg-white/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-white/10 shadow-lg shadow-slate-900/5 backdrop-blur-xl"
-          >
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-              
-              {/* GitHub */}
-              <a
-                href="https://github.com/mostafamorad1"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors group"
-              >
-                <div className="w-9 h-9 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <GithubIcon className="w-4 h-4" />
-                </div>
-                <div className="min-w-0">
-                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 block uppercase tracking-wider">
-                    GitHub
-                  </span>
-                  <span className="text-xs font-bold text-slate-900 dark:text-white truncate block group-hover:text-purple-500 transition-colors">
-                    mostafamorad1
-                  </span>
-                </div>
-              </a>
-
-              {/* LinkedIn */}
-              <a
-                href="https://www.linkedin.com/in/mostafa-morad-sayed"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors group"
-              >
-                <div className="w-9 h-9 rounded-xl bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <LinkedInIcon className="w-4 h-4" />
-                </div>
-                <div className="min-w-0">
-                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 block uppercase tracking-wider">
-                    LinkedIn
-                  </span>
-                  <span className="text-xs font-bold text-slate-900 dark:text-white truncate block group-hover:text-blue-500 transition-colors">
-                    mostafa-morad-sayed
-                  </span>
-                </div>
-              </a>
-
-              {/* Email */}
-              <a
-                href="mailto:mostafa.morad.dev@gmail.com"
-                className="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors group"
-              >
-                <div className="w-9 h-9 rounded-xl bg-teal-500/15 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <Mail className="w-4 h-4" />
-                </div>
-                <div className="min-w-0">
-                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 block uppercase tracking-wider">
-                    Email
-                  </span>
-                  <span className="text-xs font-bold text-slate-900 dark:text-white truncate block group-hover:text-teal-500 transition-colors">
-                    mostafa.morad.dev@gmail.com
-                  </span>
-                </div>
-              </a>
-
-              {/* Location */}
-              <div className="flex items-center gap-3 p-2.5 rounded-2xl">
-                <div className="w-9 h-9 rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
-                  <MapPin className="w-4 h-4" />
-                </div>
-                <div className="min-w-0">
-                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 block uppercase tracking-wider">
-                    {isAr ? "الموقع" : "Location"}
-                  </span>
-                  <span className="text-xs font-bold text-slate-900 dark:text-white truncate block">
-                    {isAr ? "الجيزة، مصر" : "Giza, Egypt"}
-                  </span>
                 </div>
               </div>
 
