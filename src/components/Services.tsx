@@ -525,63 +525,6 @@ export default function Services() {
     Z
   `.trim().replace(/\s+/g, " ");
 
-  // --- Magnetic Elastic Pull Calculation ---
-  // When activeTab is selected, and hoveredTab is different, the pill stretches toward hoveredTab
-  // Crucial: The pill MUST strictly remain inside the unified curved navbar boundary (never protrude or leak vertically)
-  const getPullStyles = (tabId: TabId) => {
-    if (tabId !== activeTab || !hoveredTab || hoveredTab === activeTab) {
-      return { x: 0, y: 0, scaleX: 1, scaleY: 1 };
-    }
-
-    const topRowIds: TabId[] = ["portfolio-dev", "data-engineering", "doc-formatting", "presentation-design"];
-    const activeTopIdx = topRowIds.indexOf(activeTab);
-    const hoveredTopIdx = topRowIds.indexOf(hoveredTab);
-
-    // Both tabs are in the top horizontal row: subtle, organic magnetic pull
-    if (activeTopIdx !== -1 && hoveredTopIdx !== -1) {
-      const diff = hoveredTopIdx - activeTopIdx;
-      // In RTL (Arabic), items are laid out right-to-left
-      const dirSign = isAr ? -1 : 1;
-      const pullX = Math.sign(diff) * Math.min(Math.abs(diff) * 5, 8) * dirSign;
-      return {
-        x: pullX,
-        y: 0,
-        scaleX: 1.05,
-        scaleY: 0.98,
-      };
-    }
-
-    // Active tab in top row, user hovering over "All Services" (below center):
-    // MUST NOT drop down vertically (y: 0) to avoid protruding below the top bar's boundary!
-    // Instead, lean gently horizontally toward the center neck where All Services connects
-    if (activeTopIdx !== -1 && hoveredTab === "all") {
-      const dirToCenter = activeTopIdx < 2 ? 1 : -1;
-      const dirSign = isAr ? -1 : 1;
-      return {
-        x: dirToCenter * 4 * dirSign,
-        y: 0,
-        scaleX: 1.03,
-        scaleY: 1.0,
-      };
-    }
-
-    // Active tab is "all" (bottom row), user hovering over a top row tab:
-    // MUST NOT push up vertically (y: 0) to avoid breaching the bottom tab's upper boundary!
-    // Instead, lean gently horizontally toward that tab's direction
-    if (activeTab === "all" && hoveredTopIdx !== -1) {
-      const dirToTab = hoveredTopIdx < 2 ? -1 : 1;
-      const dirSign = isAr ? -1 : 1;
-      return {
-        x: dirToTab * 4 * dirSign,
-        y: 0,
-        scaleX: 1.03,
-        scaleY: 1.0,
-      };
-    }
-
-    return { x: 0, y: 0, scaleX: 1, scaleY: 1 };
-  };
-
   const singleService = serviceCardsData.find((card) => card.id === activeTab);
 
   return (
@@ -657,57 +600,46 @@ export default function Services() {
               >
                 {mainTabs.map((tab) => {
                   const Icon = tab.icon;
-                  const isActive = activeTab === tab.id;
-                  const isHovered = hoveredTab === tab.id;
-                  const pullStyle = getPullStyles(tab.id);
+                  const currentDisplayTab = hoveredTab ?? activeTab;
+                  const isPillHere = currentDisplayTab === tab.id;
+                  const isSelected = activeTab === tab.id;
 
                   return (
                     <button
                       key={tab.id}
                       onClick={() => {
                         setActiveTab(tab.id);
-                        setHoveredTab(null);
                       }}
                       onMouseEnter={() => setHoveredTab(tab.id)}
                       className={`relative px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs md:text-sm font-bold transition-colors flex items-center gap-1.5 sm:gap-2 shrink-0 cursor-pointer ${
-                        isActive
+                        isPillHere
                           ? "text-indigo-600 dark:text-cyan-400"
+                          : isSelected
+                          ? "text-indigo-500/90 dark:text-cyan-300/90"
                           : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                       }`}
                     >
-                      {/* Active Pill with Magnetic Elastic Pull */}
-                      {isActive && (
+                      {/* Active / Hover Gliding Pill */}
+                      {isPillHere && (
                         <motion.div
                           layoutId="activeServiceSnakePill"
-                          animate={{
-                            x: pullStyle.x,
-                            y: pullStyle.y,
-                            scaleX: pullStyle.scaleX,
-                            scaleY: pullStyle.scaleY,
-                          }}
                           transition={{
                             type: "spring",
-                            stiffness: 350,
-                            damping: 28,
-                            mass: 0.7,
+                            stiffness: 400,
+                            damping: 30,
+                            mass: 0.6,
                           }}
                           className="absolute inset-0 bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-md border border-slate-200/90 dark:border-slate-700/90 -z-10"
                         />
                       )}
 
-                      {/* Subtle Magnetic Tension Indicator when Hovered over Inactive Tab */}
-                      {!isActive && isHovered && (
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.95 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.95 }}
-                          transition={{ duration: 0.18 }}
-                          className="absolute inset-0 bg-slate-200/50 dark:bg-slate-800/40 rounded-xl sm:rounded-2xl -z-10"
-                        />
-                      )}
-
                       <Icon className="w-4 h-4 shrink-0" aria-hidden="true" />
                       <span>{tab.label[language]}</span>
+
+                      {/* Subtle anchor indicator showing currently selected service when hovering other tabs */}
+                      {isSelected && !isPillHere && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 dark:bg-cyan-400 animate-pulse ms-0.5" />
+                      )}
                     </button>
                   );
                 })}
@@ -718,55 +650,53 @@ export default function Services() {
                 className="flex items-center justify-center"
                 style={{ height: `${H2}px`, width: `${tabW}px` }}
               >
-                <button
-                  onClick={() => {
-                    setActiveTab("all");
-                    setHoveredTab(null);
-                  }}
-                  onMouseEnter={() => setHoveredTab("all")}
-                  className={`relative w-full h-full flex items-center justify-center gap-2 rounded-b-2xl text-xs sm:text-sm font-bold transition-colors cursor-pointer ${
-                    activeTab === "all"
-                      ? "text-indigo-600 dark:text-cyan-400"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                  }`}
-                >
-                  {/* Active Pill on "All Services" with Magnetic Elastic Pull */}
-                  {activeTab === "all" && (
-                    <motion.div
-                      layoutId="activeServiceSnakePill"
-                      animate={{
-                        x: getPullStyles("all").x,
-                        y: getPullStyles("all").y,
-                        scaleX: getPullStyles("all").scaleX,
-                        scaleY: getPullStyles("all").scaleY,
-                      }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 350,
-                        damping: 28,
-                        mass: 0.7,
-                      }}
-                      className="absolute inset-x-2 inset-y-1 bg-white dark:bg-slate-800 rounded-xl shadow-md border border-slate-200/90 dark:border-slate-700/90 -z-10"
-                    />
-                  )}
+                {(() => {
+                  const currentDisplayTab = hoveredTab ?? activeTab;
+                  const isPillHere = currentDisplayTab === "all";
+                  const isSelected = activeTab === "all";
 
-                  {!activeTab.includes("all") && hoveredTab === "all" && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      transition={{ duration: 0.18 }}
-                      className="absolute inset-x-2 inset-y-1 bg-slate-200/60 dark:bg-slate-800/60 border border-slate-300/40 dark:border-slate-700/60 rounded-xl -z-10 shadow-sm"
-                    />
-                  )}
+                  return (
+                    <button
+                      onClick={() => {
+                        setActiveTab("all");
+                      }}
+                      onMouseEnter={() => setHoveredTab("all")}
+                      className={`relative w-full h-full flex items-center justify-center gap-2 rounded-b-2xl text-xs sm:text-sm font-bold transition-colors cursor-pointer ${
+                        isPillHere
+                          ? "text-indigo-600 dark:text-cyan-400"
+                          : isSelected
+                          ? "text-indigo-500/90 dark:text-cyan-300/90"
+                          : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                      }`}
+                    >
+                      {/* Active / Hover Gliding Pill on All Services */}
+                      {isPillHere && (
+                        <motion.div
+                          layoutId="activeServiceSnakePill"
+                          transition={{
+                            type: "spring",
+                            stiffness: 400,
+                            damping: 30,
+                            mass: 0.6,
+                          }}
+                          className="absolute inset-x-2 inset-y-1 bg-white dark:bg-slate-800 rounded-xl shadow-md border border-slate-200/90 dark:border-slate-700/90 -z-10"
+                        />
+                      )}
 
-                  <Layers
-                    className={`w-3.5 h-3.5 transition-transform ${
-                      activeTab === "all" ? "text-indigo-600 dark:text-cyan-400 scale-110" : ""
-                    }`}
-                  />
-                  <span>{allTab.label[language]}</span>
-                </button>
+                      <Layers
+                        className={`w-3.5 h-3.5 transition-transform ${
+                          isPillHere ? "text-indigo-600 dark:text-cyan-400 scale-110" : ""
+                        }`}
+                      />
+                      <span>{allTab.label[language]}</span>
+
+                      {/* Subtle anchor indicator if All Services is selected while hovering top row */}
+                      {isSelected && !isPillHere && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 dark:bg-cyan-400 animate-pulse ms-0.5" />
+                      )}
+                    </button>
+                  );
+                })()}
               </div>
             </div>
           </LayoutGroup>
