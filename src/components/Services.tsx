@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { useThemeLanguage } from "@/context/ThemeLanguageContext";
 import {
   Layers,
@@ -153,7 +153,7 @@ function PowerBiIcon({ className = "w-6 h-6" }: { className?: string }) {
   );
 }
 
-// --- Structured Data for Modern Service Cards ---
+// --- Structured Data for Service Cards ---
 
 interface ServiceFeatureItem {
   title: Record<"en" | "ar", string>;
@@ -162,7 +162,7 @@ interface ServiceFeatureItem {
 }
 
 interface ServiceCardDefinition {
-  id: string;
+  id: "portfolio-dev" | "data-engineering" | "doc-formatting" | "presentation-design";
   pricingCategoryId: string;
   badge: Record<"en" | "ar", string>;
   titlePrefix: Record<"en" | "ar", string>;
@@ -431,10 +431,31 @@ export default function Services() {
   const isAr = language === "ar";
 
   const [activeTab, setActiveTab] = useState<TabId>("portfolio-dev");
+  const [hoveredTab, setHoveredTab] = useState<TabId | null>(null);
   const [isPricingOpen, setIsPricingOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("portfolio");
 
-  const tabs: { id: TabId; label: Record<"en" | "ar", string>; icon: React.ElementType }[] = [
+  // Ref & width for dynamic single-path SVG background
+  const navContainerRef = useRef<HTMLDivElement>(null);
+  const [navWidth, setNavWidth] = useState<number>(680);
+
+  useEffect(() => {
+    if (!navContainerRef.current) return;
+    const el = navContainerRef.current;
+    const updateWidth = () => {
+      if (el) {
+        setNavWidth(Math.max(el.offsetWidth, 360));
+      }
+    };
+    updateWidth();
+
+    const ro = new ResizeObserver(updateWidth);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  // 4 Services in top row
+  const mainTabs: { id: Exclude<TabId, "all">; label: Record<"en" | "ar", string>; icon: React.ElementType }[] = [
     {
       id: "portfolio-dev",
       label: { en: "Portfolio & Web", ar: "البورتفوليو والويب" },
@@ -455,22 +476,104 @@ export default function Services() {
       label: { en: "Slide Decks", ar: "العروض التقديمية" },
       icon: Presentation,
     },
-    {
-      id: "all",
-      label: { en: "All Services", ar: "كل الخدمات" },
-      icon: Layers,
-    },
   ];
+
+  const allTab = {
+    id: "all" as const,
+    label: { en: "All Services", ar: "كل الخدمات" },
+    icon: Layers,
+  };
 
   const handleOpenPricing = (categoryId: string) => {
     setSelectedCategory(categoryId);
     setIsPricingOpen(true);
   };
 
-  const displayedCards =
-    activeTab === "all"
-      ? serviceCardsData
-      : serviceCardsData.filter((card) => card.id === activeTab);
+  // Dimensions for continuous unified SVG path:
+  // Top bar height = 50px, Bottom tab height = 38px, Tab width = 160px
+  const H1 = 50;
+  const H2 = 38;
+  const totalH = H1 + H2;
+  const tabW = 160;
+  const Rtop = 24;
+  const Rcurve = 18;
+  const Rtab = 16;
+  const W = navWidth;
+
+  const X1 = Math.max((W - tabW) / 2, Rtop + Rcurve);
+  const X2 = X1 + tabW;
+
+  // Single continuous outline path - Zero seams, zero dividing lines!
+  const unifiedPath = `
+    M ${Rtop},0
+    L ${W - Rtop},0
+    A ${Rtop},${Rtop} 0 0 1 ${W},${Rtop}
+    L ${W},${H1 - Rtop}
+    A ${Rtop},${Rtop} 0 0 1 ${W - Rtop},${H1}
+    L ${X2 + Rcurve},${H1}
+    Q ${X2},${H1} ${X2},${H1 + Rcurve}
+    L ${X2},${H1 + H2 - Rtab}
+    A ${Rtab},${Rtab} 0 0 1 ${X2 - Rtab},${totalH}
+    L ${X1 + Rtab},${totalH}
+    A ${Rtab},${Rtab} 0 0 1 ${X1},${H1 + H2 - Rtab}
+    L ${X1},${H1 + Rcurve}
+    Q ${X1},${H1} ${X1 - Rcurve},${H1}
+    L ${Rtop},${H1}
+    A ${Rtop},${Rtop} 0 0 1 0,${H1 - Rtop}
+    L 0,${Rtop}
+    A ${Rtop},${Rtop} 0 0 1 ${Rtop},0
+    Z
+  `.trim().replace(/\s+/g, " ");
+
+  // --- Magnetic Elastic Pull Calculation ---
+  // When activeTab is selected, and hoveredTab is different, the pill stretches toward hoveredTab
+  const getPullStyles = (tabId: TabId) => {
+    if (tabId !== activeTab || !hoveredTab || hoveredTab === activeTab) {
+      return { x: 0, y: 0, scaleX: 1, scaleY: 1 };
+    }
+
+    const topRowIds: TabId[] = ["portfolio-dev", "data-engineering", "doc-formatting", "presentation-design"];
+    const activeTopIdx = topRowIds.indexOf(activeTab);
+    const hoveredTopIdx = topRowIds.indexOf(hoveredTab);
+
+    // Both in top row
+    if (activeTopIdx !== -1 && hoveredTopIdx !== -1) {
+      const diff = hoveredTopIdx - activeTopIdx;
+      // In RTL, the items are laid out right-to-left
+      const dirSign = isAr ? -1 : 1;
+      const pullX = Math.sign(diff) * Math.min(Math.abs(diff) * 9, 16) * dirSign;
+      return {
+        x: pullX,
+        y: 0,
+        scaleX: 1.12,
+        scaleY: 0.95,
+      };
+    }
+
+    // Active in top row, hovering over "all" (below)
+    if (activeTopIdx !== -1 && hoveredTab === "all") {
+      return {
+        x: 0,
+        y: 9,
+        scaleX: 0.96,
+        scaleY: 1.15,
+      };
+    }
+
+    // Active is "all" (below), hovering over top row
+    if (activeTab === "all" && hoveredTopIdx !== -1) {
+      return {
+        x: 0,
+        y: -9,
+        scaleX: 0.96,
+        scaleY: 1.15,
+      };
+    }
+
+    return { x: 0, y: 0, scaleX: 1, scaleY: 1 };
+  };
+
+  const singleService = serviceCardsData.find((card) => card.id === activeTab);
 
   return (
     <section id="services" className="py-20 md:py-28 relative scroll-mt-20 md:scroll-mt-24">
@@ -507,133 +610,321 @@ export default function Services() {
           </div>
         </div>
 
-        {/* Modern Pill-Style Category Filter Navigation */}
-        <div className="flex justify-center mb-10 overflow-x-auto py-2 no-scrollbar">
-          <div className="inline-flex items-center gap-1.5 p-1.5 rounded-2xl bg-slate-100/90 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800/90 backdrop-blur-md shadow-sm">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
+        {/* Unified Continuous Snake Navbar with Curved "All Services" Tab and Magnetic Pull Animation */}
+        <div className="flex justify-center mb-12 w-full overflow-x-auto py-2 no-scrollbar">
+          <LayoutGroup id="servicesUnifiedNavbar">
+            <div
+              id="servicesSubNav"
+              ref={navContainerRef}
+              className="relative inline-flex flex-col items-center select-none shrink-0"
+              style={{ width: "fit-content", minHeight: `${totalH}px` }}
+              onMouseLeave={() => setHoveredTab(null)}
+            >
+              {/* Single Continuous SVG Boundary - Zero Seams & Zero Dividing Lines */}
+              <svg
+                width={W}
+                height={totalH}
+                viewBox={`0 0 ${W} ${totalH}`}
+                className="absolute inset-0 pointer-events-none -z-10 drop-shadow-md"
+                aria-hidden="true"
+              >
+                <path
+                  d={unifiedPath}
+                  className="fill-slate-100/95 dark:fill-slate-900/95 stroke-slate-200/90 dark:stroke-slate-800/90"
+                  strokeWidth="1.5"
+                  strokeLinejoin="round"
+                />
+              </svg>
 
-              return (
+              {/* Row 1: The 4 Main Category Tabs (NEVER WRAP) */}
+              <div
+                className="flex items-center justify-center flex-nowrap whitespace-nowrap gap-1 sm:gap-2 px-3"
+                style={{ height: `${H1}px` }}
+              >
+                {mainTabs.map((tab) => {
+                  const Icon = tab.icon;
+                  const isActive = activeTab === tab.id;
+                  const isHovered = hoveredTab === tab.id;
+                  const pullStyle = getPullStyles(tab.id);
+
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => {
+                        setActiveTab(tab.id);
+                        setHoveredTab(null);
+                      }}
+                      onMouseEnter={() => setHoveredTab(tab.id)}
+                      className={`relative px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs md:text-sm font-bold transition-colors flex items-center gap-1.5 sm:gap-2 shrink-0 cursor-pointer ${
+                        isActive
+                          ? "text-indigo-600 dark:text-cyan-400"
+                          : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                      }`}
+                    >
+                      {/* Active Pill with Magnetic Elastic Pull */}
+                      {isActive && (
+                        <motion.div
+                          layoutId="activeServiceSnakePill"
+                          animate={{
+                            x: pullStyle.x,
+                            y: pullStyle.y,
+                            scaleX: pullStyle.scaleX,
+                            scaleY: pullStyle.scaleY,
+                          }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 420,
+                            damping: 22,
+                            mass: 0.6,
+                          }}
+                          className="absolute inset-0 bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-md border border-slate-200/90 dark:border-slate-700/90 -z-10"
+                        />
+                      )}
+
+                      {/* Subtle Magnetic Tension Indicator when Hovered over Inactive Tab */}
+                      {!isActive && isHovered && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.95 }}
+                          className="absolute inset-0 bg-slate-200/50 dark:bg-slate-800/40 rounded-xl sm:rounded-2xl -z-10"
+                        />
+                      )}
+
+                      <Icon className="w-4 h-4 shrink-0" aria-hidden="true" />
+                      <span>{tab.label[language]}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Row 2: Centered "All Services" Tab with Downward Seamless Curve */}
+              <div
+                className="flex items-center justify-center"
+                style={{ height: `${H2}px`, width: `${tabW}px` }}
+              >
                 <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`relative px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
-                    isActive
-                      ? "text-white"
+                  onClick={() => {
+                    setActiveTab("all");
+                    setHoveredTab(null);
+                  }}
+                  onMouseEnter={() => setHoveredTab("all")}
+                  className={`relative w-full h-full flex items-center justify-center gap-2 rounded-b-2xl text-xs sm:text-sm font-bold transition-colors cursor-pointer ${
+                    activeTab === "all"
+                      ? "text-indigo-600 dark:text-cyan-400"
                       : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                   }`}
                 >
-                  {isActive && (
+                  {/* Active Pill on "All Services" with Magnetic Elastic Pull */}
+                  {activeTab === "all" && (
                     <motion.div
-                      layoutId="activeServiceCategoryPill"
-                      className="absolute inset-0 bg-blue-600 dark:bg-blue-600 rounded-xl shadow-md -z-10"
+                      layoutId="activeServiceSnakePill"
+                      animate={{
+                        x: getPullStyles("all").x,
+                        y: getPullStyles("all").y,
+                        scaleX: getPullStyles("all").scaleX,
+                        scaleY: getPullStyles("all").scaleY,
+                      }}
                       transition={{
                         type: "spring",
-                        stiffness: 400,
-                        damping: 28,
+                        stiffness: 420,
+                        damping: 22,
+                        mass: 0.6,
                       }}
+                      className="absolute inset-x-1.5 inset-y-1 bg-white dark:bg-slate-800 rounded-xl shadow-md border border-slate-200/90 dark:border-slate-700/90 -z-10"
                     />
                   )}
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? "text-white" : "text-slate-500 dark:text-slate-400"}`} />
-                  <span>{tab.label[language]}</span>
+
+                  {!activeTab.includes("all") && hoveredTab === "all" && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="absolute inset-x-1.5 inset-y-1 bg-slate-200/50 dark:bg-slate-800/40 rounded-xl -z-10"
+                    />
+                  )}
+
+                  <Layers
+                    className={`w-3.5 h-3.5 transition-transform ${
+                      activeTab === "all" ? "text-indigo-600 dark:text-cyan-400 scale-110" : ""
+                    }`}
+                  />
+                  <span>{allTab.label[language]}</span>
                 </button>
-              );
-            })}
-          </div>
+              </div>
+            </div>
+          </LayoutGroup>
         </div>
 
-        {/* Services Cards List / Grid */}
+        {/* Content View: Single Service (Heroic Executive Card) VS All Services (2x2 Quadrants Square) */}
         <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -16 }}
-            transition={{ duration: 0.3 }}
-            className="space-y-10"
-          >
-            {displayedCards.map((card) => (
+          {activeTab !== "all" && singleService ? (
+            /* --- SINGLE SERVICE VIEW (Heroic Executive Card with 6 Capability Squircles) --- */
+            <motion.div
+              key={singleService.id}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -16 }}
+              transition={{ duration: 0.3 }}
+              className="relative rounded-3xl bg-white dark:bg-[#0c1322] border border-slate-200/90 dark:border-slate-800/90 shadow-xl dark:shadow-2xl overflow-hidden backdrop-blur-xl p-6 sm:p-8 md:p-10 lg:p-12 transition-all duration-300"
+            >
+              {/* Ambient Glows */}
               <div
-                key={card.id}
-                className="relative rounded-3xl bg-white dark:bg-[#0c1322] border border-slate-200/90 dark:border-slate-800/90 shadow-xl dark:shadow-2xl overflow-hidden backdrop-blur-xl p-6 sm:p-8 md:p-10 lg:p-12 transition-all duration-300"
-              >
-                {/* Subtle Ambient Glows Inside the Card */}
-                <div
-                  className="absolute -top-32 -left-32 w-80 h-80 bg-blue-500/10 dark:bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"
-                  aria-hidden="true"
-                />
-                <div
-                  className="absolute -bottom-32 -right-32 w-80 h-80 bg-indigo-500/10 dark:bg-blue-600/10 rounded-full blur-3xl pointer-events-none"
-                  aria-hidden="true"
-                />
+                className="absolute -top-32 -left-32 w-80 h-80 bg-blue-500/10 dark:bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"
+                aria-hidden="true"
+              />
+              <div
+                className="absolute -bottom-32 -right-32 w-80 h-80 bg-indigo-500/10 dark:bg-blue-600/10 rounded-full blur-3xl pointer-events-none"
+                aria-hidden="true"
+              />
 
-                <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-                  {/* Left Column: Heroic Service Details */}
-                  <div className="lg:col-span-5 flex flex-col items-start justify-center text-start">
-                    {/* Badge */}
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700/80 bg-slate-50 dark:bg-slate-800/60 text-[11px] sm:text-xs font-semibold tracking-wider text-slate-700 dark:text-slate-300 mb-5 shadow-xs">
-                      <Layers className="w-3.5 h-3.5 text-blue-500 dark:text-blue-400" />
-                      <span className="uppercase">{card.badge[language]}</span>
+              <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                {/* Left Column: Heroic Service Details */}
+                <div className="lg:col-span-5 flex flex-col items-start justify-center text-start">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700/80 bg-slate-50 dark:bg-slate-800/60 text-[11px] sm:text-xs font-semibold tracking-wider text-slate-700 dark:text-slate-300 mb-5 shadow-xs">
+                    <Layers className="w-3.5 h-3.5 text-blue-500 dark:text-blue-400" />
+                    <span className="uppercase">{singleService.badge[language]}</span>
+                  </div>
+
+                  <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight mb-4">
+                    {singleService.titlePrefix[language]}{" "}
+                    <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 dark:from-blue-400 dark:via-cyan-400 dark:to-indigo-400 text-transparent bg-clip-text">
+                      {singleService.titleHighlight[language]}
+                    </span>
+                  </h3>
+
+                  <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed mb-7 max-w-lg">
+                    {singleService.description[language]}
+                  </p>
+
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleOpenPricing(singleService.pricingCategoryId)}
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl sm:rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-600/25 hover:shadow-lg hover:shadow-blue-600/40 transition-all cursor-pointer group"
+                  >
+                    <span>{singleService.buttonText[language]}</span>
+                    {isAr ? (
+                      <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                    ) : (
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    )}
+                  </motion.button>
+                </div>
+
+                {/* Right Column: 2x3 Grid of 6 Capability Squircles */}
+                <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6 sm:gap-y-7 pt-4 lg:pt-0 border-t lg:border-t-0 border-slate-100 dark:border-slate-800/80">
+                  {singleService.features.map((feature, fIdx) => (
+                    <div key={fIdx} className="flex items-start gap-3.5 group text-start">
+                      <div
+                        className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/70 flex items-center justify-center p-2.5 shrink-0 shadow-sm group-hover:border-blue-400 dark:group-hover:border-blue-500/60 group-hover:scale-105 transition-all"
+                        aria-hidden="true"
+                      >
+                        {feature.icon}
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors leading-snug">
+                          {feature.title[language]}
+                        </h4>
+                        <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mt-1">
+                          {feature.description[language]}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          ) : (
+            /* --- ALL SERVICES VIEW: 2x2 Square Grid (كل سيرفس واخدة ربع) --- */
+            <motion.div
+              key="all-services-grid"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -16 }}
+              transition={{ duration: 0.3 }}
+              className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8"
+            >
+              {serviceCardsData.map((service) => (
+                <div
+                  key={service.id}
+                  className="relative rounded-3xl bg-white dark:bg-[#0c1322] border border-slate-200/90 dark:border-slate-800/90 p-6 sm:p-8 shadow-xl dark:shadow-2xl flex flex-col justify-between overflow-hidden group hover:border-blue-500/50 transition-all duration-300 text-start"
+                >
+                  {/* Subtle Glow */}
+                  <div
+                    className="absolute -top-24 -right-24 w-52 h-52 bg-blue-500/10 dark:bg-cyan-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-blue-500/20 transition-all"
+                    aria-hidden="true"
+                  />
+
+                  {/* Header & Meta */}
+                  <div>
+                    <div className="flex items-center justify-between gap-3 mb-4">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700/80 bg-slate-50 dark:bg-slate-800/60 text-[11px] font-semibold tracking-wider text-slate-700 dark:text-slate-300">
+                        <Layers className="w-3 h-3 text-blue-500 dark:text-blue-400" />
+                        <span className="uppercase">{service.badge[language]}</span>
+                      </div>
+
+                      <button
+                        onClick={() => setActiveTab(service.id)}
+                        className="text-xs font-bold text-blue-600 dark:text-cyan-400 hover:underline flex items-center gap-1 cursor-pointer transition-colors"
+                      >
+                        <span>{isAr ? "عرض التفاصيل الكاملة" : "Full Details"}</span>
+                        {isAr ? <ArrowLeft className="w-3.5 h-3.5" /> : <ArrowRight className="w-3.5 h-3.5" />}
+                      </button>
                     </div>
 
-                    {/* Bold Title with Gradient Highlight */}
-                    <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight mb-4">
-                      {card.titlePrefix[language]}{" "}
+                    {/* Title */}
+                    <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-2.5">
+                      {service.titlePrefix[language]}{" "}
                       <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 dark:from-blue-400 dark:via-cyan-400 dark:to-indigo-400 text-transparent bg-clip-text">
-                        {card.titleHighlight[language]}
+                        {service.titleHighlight[language]}
                       </span>
                     </h3>
 
-                    {/* Descriptive Paragraph */}
-                    <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed mb-7 max-w-lg">
-                      {card.description[language]}
+                    {/* Concise 2-line Description */}
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-2 mb-6">
+                      {service.description[language]}
                     </p>
 
-                    {/* Action Button: Explore Packages */}
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => handleOpenPricing(card.pricingCategoryId)}
-                      className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl sm:rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-600/25 hover:shadow-lg hover:shadow-blue-600/40 transition-all cursor-pointer group"
-                    >
-                      <span>{card.buttonText[language]}</span>
-                      {isAr ? (
-                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                      ) : (
-                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                      )}
-                    </motion.button>
+                    {/* Compact Capability Squircles Preview (Key Highlights) */}
+                    <div className="grid grid-cols-2 gap-2.5 mb-6">
+                      {service.features.slice(0, 4).map((feat, fIdx) => (
+                        <div
+                          key={fIdx}
+                          className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/70"
+                        >
+                          <div className="w-8 h-8 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/60 flex items-center justify-center p-1.5 shrink-0 shadow-2xs">
+                            {feat.icon}
+                          </div>
+                          <span className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
+                            {feat.title[language]}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
-                  {/* Right Column: 2x3 Grid of Features & Capabilities with Squircles */}
-                  <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6 sm:gap-y-7 pt-4 lg:pt-0 border-t lg:border-t-0 border-slate-100 dark:border-slate-800/80">
-                    {card.features.map((feature, fIdx) => (
-                      <div key={fIdx} className="flex items-start gap-3.5 group text-start">
-                        {/* Squircle Icon Container (Exact Aesthetic from Image) */}
-                        <div
-                          className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/70 flex items-center justify-center p-2.5 shrink-0 shadow-sm group-hover:border-blue-400 dark:group-hover:border-blue-500/60 group-hover:scale-105 transition-all"
-                          aria-hidden="true"
-                        >
-                          {feature.icon}
-                        </div>
+                  {/* Footer Actions */}
+                  <div className="flex items-center justify-between gap-3 pt-4 border-t border-slate-100 dark:border-slate-800/80">
+                    <button
+                      onClick={() => handleOpenPricing(service.pricingCategoryId)}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md shadow-blue-600/20 hover:shadow-blue-600/35 transition-all cursor-pointer"
+                    >
+                      <span>{service.buttonText[language]}</span>
+                      {isAr ? <ArrowLeft className="w-3.5 h-3.5" /> : <ArrowRight className="w-3.5 h-3.5" />}
+                    </button>
 
-                        {/* Title and Short Description */}
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors leading-snug">
-                            {feature.title[language]}
-                          </h4>
-                          <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mt-1">
-                            {feature.description[language]}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
+                    <button
+                      onClick={() => setActiveTab(service.id)}
+                      className="text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+                    >
+                      {isAr ? "استعراض الـ 6 مميزات" : "View All 6 Features"}
+                    </button>
                   </div>
                 </div>
-              </div>
-            ))}
-          </motion.div>
+              ))}
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
 
