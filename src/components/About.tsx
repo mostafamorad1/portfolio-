@@ -6,9 +6,6 @@ import { useThemeLanguage } from "@/context/ThemeLanguageContext";
 import {
   User,
   Briefcase,
-  Layers,
-  Gauge,
-  BarChart3,
   Settings,
   GraduationCap,
   Sparkles,
@@ -38,6 +35,171 @@ function LinkedInIcon({ className }: { className?: string }) {
       aria-hidden="true"
     >
       <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76c.97 0 1.75-.79 1.75-1.76s-.78-1.76-1.75-1.76-1.75.79-1.75 1.76.78 1.76 1.75 1.76m1.4 9.74v-8.37H5.06v8.37h2.8z" />
+    </svg>
+  );
+}
+
+function TargetWithArrowIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 200 200" fill="none" className={className} aria-hidden="true">
+      <defs>
+        <filter id="neonBlurGlow" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="5" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+        <radialGradient id="targetBackdropGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.25" />
+          <stop offset="50%" stopColor="#818cf8" stopOpacity="0.1" />
+          <stop offset="100%" stopColor="transparent" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="coreCyanGlow" cx="35%" cy="35%" r="65%">
+          <stop offset="0%" stopColor="#bae6fd" />
+          <stop offset="45%" stopColor="#06b6d4" />
+          <stop offset="100%" stopColor="#2563eb" />
+        </radialGradient>
+        <linearGradient id="purpleRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#e879f9" />
+          <stop offset="100%" stopColor="#7c3aed" />
+        </linearGradient>
+        <linearGradient id="blueRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#38bdf8" />
+          <stop offset="100%" stopColor="#1d4ed8" />
+        </linearGradient>
+        <linearGradient id="arrowShaftGradient" x1="100%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="50%" stopColor="#e0f2fe" />
+          <stop offset="100%" stopColor="#38bdf8" />
+        </linearGradient>
+        <linearGradient id="fletchCyan" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#38bdf8" />
+          <stop offset="100%" stopColor="#0284c7" />
+        </linearGradient>
+        <linearGradient id="fletchPurple" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#c084fc" />
+          <stop offset="100%" stopColor="#7e22ce" />
+        </linearGradient>
+      </defs>
+
+      {/* Ambient Radial Halo */}
+      <circle cx="95" cy="100" r="90" fill="url(#targetBackdropGlow)" />
+
+      {/* Outer Metallic Base Disc */}
+      <circle cx="95" cy="100" r="80" fill="#090d18" stroke="#1c273c" strokeWidth="2.5" />
+      <circle cx="95" cy="100" r="70" fill="none" stroke="#121a2d" strokeWidth="8" />
+
+      {/* Ring 1: Glowing Purple / Indigo Ring */}
+      <circle
+        cx="95"
+        cy="100"
+        r="57"
+        fill="none"
+        stroke="url(#purpleRingGrad)"
+        strokeWidth="8"
+        filter="url(#neonBlurGlow)"
+      />
+
+      {/* Deep Groove Between Rings */}
+      <circle cx="95" cy="100" r="47" fill="none" stroke="#090d18" strokeWidth="6" />
+
+      {/* Ring 2: Glowing Electric Blue Ring */}
+      <circle
+        cx="95"
+        cy="100"
+        r="38"
+        fill="none"
+        stroke="url(#blueRingGrad)"
+        strokeWidth="9"
+        filter="url(#neonBlurGlow)"
+      />
+
+      {/* Inner Groove */}
+      <circle cx="95" cy="100" r="26" fill="none" stroke="#090d18" strokeWidth="5" />
+
+      {/* Bullseye Core (Radiant Cyan Core) */}
+      <circle
+        cx="95"
+        cy="100"
+        r="17"
+        fill="url(#coreCyanGlow)"
+        filter="url(#neonBlurGlow)"
+      />
+      <circle cx="95" cy="100" r="4" fill="#ffffff" />
+
+      {/* Embedded Arrow (from 158, 37 to 95, 100) */}
+      <g filter="url(#neonBlurGlow)">
+        {/* Shaft */}
+        <line
+          x1="158"
+          y1="37"
+          x2="95"
+          y2="100"
+          stroke="url(#arrowShaftGradient)"
+          strokeWidth="3.5"
+          strokeLinecap="round"
+        />
+
+        {/* Arrow Fletching Fins (Feathers) at top-right */}
+        {/* Top cyan chevron */}
+        <polygon points="152,43 164,31 174,35 160,49" fill="url(#fletchCyan)" />
+        {/* Bottom purple chevron */}
+        <polygon points="154,41 166,49 172,59 158,53" fill="url(#fletchPurple)" />
+        {/* Secondary rear notch */}
+        <polygon points="163,33 175,23 183,28 171,40" fill="url(#fletchCyan)" opacity="0.85" />
+        <polygon points="166,39 176,47 182,56 170,51" fill="url(#fletchPurple)" opacity="0.85" />
+      </g>
+
+      {/* Ambient 4-Point Sparkles and Neon Dust */}
+      <path
+        d="M 22 45 Q 22 50 17 50 Q 22 50 22 55 Q 22 50 27 50 Q 22 50 22 45 Z"
+        fill="#38bdf8"
+      />
+      <path
+        d="M 172 150 Q 172 155 167 155 Q 172 155 172 160 Q 172 155 177 155 Q 172 155 172 150 Z"
+        fill="#c084fc"
+      />
+      <circle cx="34" cy="155" r="1.5" fill="#38bdf8" opacity="0.8" />
+      <circle cx="168" cy="85" r="1.5" fill="#c084fc" opacity="0.8" />
+      <circle cx="135" cy="170" r="1" fill="#ffffff" opacity="0.6" />
+    </svg>
+  );
+}
+
+function IsometricCubesIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 28 28" fill="none" className={className} aria-hidden="true">
+      {/* Top Cube */}
+      <path d="M14 2L20 5.5L14 9L8 5.5L14 2Z" fill="#d8b4fe" />
+      <path d="M8 5.5L14 9V15L8 11.5V5.5Z" fill="#a855f7" />
+      <path d="M20 5.5L14 9V15L20 11.5V5.5Z" fill="#7e22ce" />
+
+      {/* Bottom Left Cube */}
+      <path d="M8 12.5L14 16L8 19.5L2 16L8 12.5Z" fill="#d8b4fe" />
+      <path d="M2 16L8 19.5V25.5L2 22V16Z" fill="#a855f7" />
+      <path d="M14 16L8 19.5V25.5L14 22V16Z" fill="#7e22ce" />
+
+      {/* Bottom Right Cube */}
+      <path d="M20 12.5L26 16L20 19.5L14 16L20 12.5Z" fill="#d8b4fe" />
+      <path d="M14 16L20 19.5V25.5L14 22V16Z" fill="#a855f7" />
+      <path d="M26 16L20 19.5V25.5L26 22V16Z" fill="#7e22ce" />
+    </svg>
+  );
+}
+
+function LightningBoltIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M13 2L3 13.5H12L11 22L21 10.5H12L13 2Z" fill="#3b82f6" />
+    </svg>
+  );
+}
+
+function StepBarsIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <rect x="2" y="15" width="3.5" height="7" rx="1.5" fill="#14b8a6" />
+      <rect x="8" y="11" width="3.5" height="11" rx="1.5" fill="#14b8a6" />
+      <rect x="14" y="7" width="3.5" height="15" rx="1.5" fill="#14b8a6" />
+      <rect x="20" y="3" width="3.5" height="19" rx="1.5" fill="#14b8a6" />
     </svg>
   );
 }
@@ -331,78 +493,101 @@ export default function About() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.25 }}
-            className="p-8 sm:p-10 rounded-3xl bg-gradient-to-br from-indigo-950/95 via-slate-900/95 to-slate-950 border border-indigo-500/30 dark:border-cyan-500/30 shadow-2xl shadow-indigo-950/40 relative overflow-hidden backdrop-blur-xl"
+            className="relative p-6 sm:p-8 lg:p-10 rounded-[28px] sm:rounded-3xl bg-[#080d1a] dark:bg-[#070b16] border border-[#1b263e] dark:border-[#182338] shadow-2xl shadow-indigo-950/40 overflow-hidden"
           >
-            {/* Ambient Background Wave Accent */}
-            <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-purple-500 via-indigo-600 to-transparent" />
-            <div className="absolute -bottom-10 -end-10 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+            {/* Dot Matrix in Bottom-Start Corner */}
+            <div className="absolute bottom-4 start-5 sm:bottom-6 sm:start-8 grid grid-cols-4 gap-1.5 opacity-25 pointer-events-none">
+              {Array.from({ length: 12 }).map((_, i) => (
+                <span key={i} className="w-1 h-1 rounded-full bg-cyan-400" />
+              ))}
+            </div>
 
-            <div className="relative z-10">
-              {/* Eyebrow Label */}
-              <span className="text-xs sm:text-sm font-bold tracking-widest uppercase text-purple-400 dark:text-purple-300 block mb-3">
-                {isAr ? "القيمة المضافة الفريدة (USP)" : "UNIQUE SELLING PROPOSITION"}
-              </span>
+            <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 sm:gap-8 lg:gap-10">
+              {/* Left Side: Prominent 3D Bullseye Target with Arrow */}
+              <div className="flex-shrink-0 flex items-center justify-center">
+                <div className="w-40 h-40 sm:w-48 sm:h-48 lg:w-52 lg:h-52 relative flex items-center justify-center">
+                  <TargetWithArrowIcon className="w-full h-full drop-shadow-[0_10px_25px_rgba(59,130,246,0.3)]" />
+                </div>
+              </div>
 
-              {/* USP Core Statement */}
-              <p className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-white leading-snug tracking-tight mb-8 max-w-4xl">
-                {isAr ? (
-                  <>
-                    أدمج بين هندسة البيانات وتطوير الويب لبناء أنظمة قابلة للتوسع تحول البيانات الخام إلى{" "}
-                    <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                      حلول موثوقة
-                    </span>{" "}
-                    و{" "}
-                    <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-                      قابلة للتنفيذ
-                    </span>
-                    .
-                  </>
-                ) : (
-                  <>
-                    I bridge Data Engineering and Web Development to build scalable systems that transform raw data into{" "}
-                    <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                      reliable
-                    </span>
-                    ,{" "}
-                    <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-                      actionable
-                    </span>{" "}
-                    solutions.
-                  </>
-                )}
-              </p>
-
-              {/* 3 Pillars Row */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4">
-                {/* Pillar 1 */}
-                <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
-                  <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0">
-                    <Layers className="w-5 h-5" />
-                  </div>
-                  <span className="text-xs sm:text-sm font-bold text-slate-100">
-                    {isAr ? "معمارية قابلة للتوسع" : "Scalable Architecture"}
+              {/* Right Side: Statement & 3 Divided Pillars */}
+              <div className="flex-grow flex flex-col justify-between">
+                <div>
+                  {/* Eyebrow Label */}
+                  <span className="text-xs sm:text-sm font-bold tracking-wider uppercase text-purple-400 dark:text-purple-300 block mb-2.5">
+                    {isAr ? "القيمة المضافة الفريدة" : "UNIQUE SELLING PROPOSITION"}
                   </span>
+
+                  {/* USP Statement */}
+                  <p className="text-lg sm:text-xl lg:text-[23px] xl:text-[25px] font-extrabold text-white leading-snug tracking-tight mb-6">
+                    {isAr ? (
+                      <>
+                        أربط بين هندسة البيانات وتطوير الويب لبناء أنظمة قابلة للتوسع تحوّل البيانات الخام إلى{" "}
+                        <span className="text-[#38bdf8] font-black">حلول موثوقة، وقابلة للتنفيذ</span>.
+                      </>
+                    ) : (
+                      <>
+                        I bridge Data Engineering and Web Development to build scalable systems that transform raw data into{" "}
+                        <span className="text-[#38bdf8] font-black">reliable, actionable</span> solutions.
+                      </>
+                    )}
+                  </p>
                 </div>
 
-                {/* Pillar 2 */}
-                <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
-                  <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
-                    <Gauge className="w-5 h-5" />
+                {/* 3 Pillars in a Row with Vertical Dividers */}
+                <div className="flex flex-wrap sm:flex-nowrap items-center gap-4 sm:gap-6 pt-2">
+                  {/* Pillar 1: Scalable Architecture */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 flex items-center justify-center shrink-0">
+                      <IsometricCubesIcon className="w-8 h-8" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-xs sm:text-sm font-bold text-white leading-tight">
+                        {isAr ? "معمارية" : "Scalable"}
+                      </span>
+                      <span className="text-xs sm:text-sm font-medium text-slate-400 leading-tight">
+                        {isAr ? "قابلة للتوسع" : "Architecture"}
+                      </span>
+                    </div>
                   </div>
-                  <span className="text-xs sm:text-sm font-bold text-slate-100">
-                    {isAr ? "خطوط معالجة عالية الأداء" : "High-Performance Pipelines"}
-                  </span>
+
+                  {/* Vertical Divider */}
+                  <div className="hidden sm:block w-px h-8 bg-slate-800 dark:bg-slate-800" aria-hidden="true" />
+
+                  {/* Pillar 2: High-Performance Pipelines */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 flex items-center justify-center shrink-0">
+                      <LightningBoltIcon className="w-6 h-6" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-xs sm:text-sm font-bold text-white leading-tight">
+                        {isAr ? "خطوط معالجة" : "High-Performance"}
+                      </span>
+                      <span className="text-xs sm:text-sm font-medium text-slate-400 leading-tight">
+                        {isAr ? "عالية الأداء" : "Pipelines"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Vertical Divider */}
+                  <div className="hidden sm:block w-px h-8 bg-slate-800 dark:bg-slate-800" aria-hidden="true" />
+
+                  {/* Pillar 3: Data-Driven Applications */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 flex items-center justify-center shrink-0">
+                      <StepBarsIcon className="w-6 h-6" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-xs sm:text-sm font-bold text-white leading-tight">
+                        {isAr ? "تطبيقات مدفوعة" : "Data-Driven"}
+                      </span>
+                      <span className="text-xs sm:text-sm font-medium text-slate-400 leading-tight">
+                        {isAr ? "بالبيانات" : "Applications"}
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Pillar 3 */}
-                <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
-                  <div className="w-10 h-10 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center shrink-0">
-                    <BarChart3 className="w-5 h-5" />
-                  </div>
-                  <span className="text-xs sm:text-sm font-bold text-slate-100">
-                    {isAr ? "تطبيقات مدفوعة بالبيانات" : "Data-Driven Applications"}
-                  </span>
-                </div>
               </div>
             </div>
           </motion.div>
