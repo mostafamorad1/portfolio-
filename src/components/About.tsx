@@ -44,7 +44,7 @@ function TargetWithArrowIcon({ className }: { className?: string }) {
     <svg viewBox="0 0 200 200" fill="none" className={className} aria-hidden="true">
       <defs>
         <filter id="neonBlurGlow" x="-30%" y="-30%" width="160%" height="160%">
-          <feGaussianBlur stdDeviation="5" result="blur" />
+          <feGaussianBlur stdDeviation="4.5" result="blur" />
           <feComposite in="SourceGraphic" in2="blur" operator="over" />
         </filter>
         <radialGradient id="targetBackdropGlow" cx="50%" cy="50%" r="50%">
@@ -57,6 +57,11 @@ function TargetWithArrowIcon({ className }: { className?: string }) {
           <stop offset="45%" stopColor="#06b6d4" />
           <stop offset="100%" stopColor="#2563eb" />
         </radialGradient>
+        <radialGradient id="tailAura" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.5" />
+          <stop offset="60%" stopColor="#818cf8" stopOpacity="0.15" />
+          <stop offset="100%" stopColor="transparent" stopOpacity="0" />
+        </radialGradient>
         <linearGradient id="purpleRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#e879f9" />
           <stop offset="100%" stopColor="#7c3aed" />
@@ -65,17 +70,17 @@ function TargetWithArrowIcon({ className }: { className?: string }) {
           <stop offset="0%" stopColor="#38bdf8" />
           <stop offset="100%" stopColor="#1d4ed8" />
         </linearGradient>
-        <linearGradient id="arrowShaftGradient" x1="100%" y1="0%" x2="0%" y2="100%">
+        <linearGradient id="arrowShaftGradient" x1="100%" y1="0%" x2="0%" y2="0%">
           <stop offset="0%" stopColor="#ffffff" />
           <stop offset="50%" stopColor="#e0f2fe" />
-          <stop offset="100%" stopColor="#38bdf8" />
+          <stop offset="100%" stopColor="#67e8f9" />
         </linearGradient>
         <linearGradient id="fletchCyan" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#38bdf8" />
+          <stop offset="0%" stopColor="#67e8f9" />
           <stop offset="100%" stopColor="#0284c7" />
         </linearGradient>
         <linearGradient id="fletchPurple" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#c084fc" />
+          <stop offset="0%" stopColor="#e879f9" />
           <stop offset="100%" stopColor="#7e22ce" />
         </linearGradient>
       </defs>
@@ -123,29 +128,47 @@ function TargetWithArrowIcon({ className }: { className?: string }) {
         fill="url(#coreCyanGlow)"
         filter="url(#neonBlurGlow)"
       />
-      <circle cx="95" cy="100" r="4" fill="#ffffff" />
 
-      {/* Embedded Arrow (from 158, 37 to 95, 100) */}
-      <g filter="url(#neonBlurGlow)">
-        {/* Shaft */}
+      {/* ================= MATHEMATICALLY PERFECT 3D ARROW ================= */}
+      {/* Rotated directly along the 45-degree trajectory into center (95, 100) */}
+      <g transform="translate(95, 100) rotate(-45)">
+        {/* Tail Ambient Atmospheric Glow */}
+        <ellipse cx="72" cy="0" rx="18" ry="14" fill="url(#tailAura)" filter="url(#neonBlurGlow)" />
+
+        {/* Arrow Shaft (Solid luminous line) */}
         <line
-          x1="158"
-          y1="37"
-          x2="95"
-          y2="100"
+          x1="2"
+          y1="0"
+          x2="88"
+          y2="0"
           stroke="url(#arrowShaftGradient)"
-          strokeWidth="3.5"
+          strokeWidth="3.2"
           strokeLinecap="round"
+          filter="url(#neonBlurGlow)"
         />
 
-        {/* Arrow Fletching Fins (Feathers) at top-right */}
-        {/* Top cyan chevron */}
-        <polygon points="152,43 164,31 174,35 160,49" fill="url(#fletchCyan)" />
-        {/* Bottom purple chevron */}
-        <polygon points="154,41 166,49 172,59 158,53" fill="url(#fletchPurple)" />
-        {/* Secondary rear notch */}
-        <polygon points="163,33 175,23 183,28 171,40" fill="url(#fletchCyan)" opacity="0.85" />
-        <polygon points="166,39 176,47 182,56 170,51" fill="url(#fletchPurple)" opacity="0.85" />
+        {/* Front Fletching Tier (Aerodynamic swept-back chevrons) */}
+        {/* Top cyan wing */}
+        <polygon points="50,0 62,-7.5 70,-7.5 60,0" fill="url(#fletchCyan)" />
+        {/* Bottom purple wing */}
+        <polygon points="50,0 62,7.5 70,7.5 60,0" fill="url(#fletchPurple)" />
+
+        {/* Rear Fletching Tier (Slightly larger rear chevrons) */}
+        {/* Top cyan wing */}
+        <polygon points="64,0 76,-9 85,-9 75,0" fill="url(#fletchCyan)" />
+        {/* Bottom purple wing */}
+        <polygon points="64,0 76,9 85,9 75,0" fill="url(#fletchPurple)" />
+
+        {/* Arrow Tail Nock (End Cap) */}
+        <path d="M 85,-2 L 91,-1.5 L 91,1.5 L 85,2 Z" fill="#38bdf8" />
+        <line x1="88" y1="-1" x2="88" y2="1" stroke="#090d18" strokeWidth="1.5" />
+
+        {/* Arrowhead (Sharp solid white point embedded in bullseye) */}
+        <polygon points="0,0 9,-3.5 6.5,0 9,3.5" fill="#ffffff" filter="url(#neonBlurGlow)" />
+
+        {/* Bullseye Impact Flash */}
+        <circle cx="0" cy="0" r="3.5" fill="#ffffff" />
+        <circle cx="0" cy="0" r="7.5" fill="none" stroke="#67e8f9" strokeWidth="1.5" opacity="0.8" />
       </g>
 
       {/* Ambient 4-Point Sparkles and Neon Dust */}
